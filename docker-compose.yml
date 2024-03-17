@@ -4,11 +4,9 @@ services:
   backend:
     container_name: backend
     image: node
-    working_dir: /app
     tty: true
     depends_on:
       - db
-    command: sh -c "npm install"
     ports:
       - 8000:8000
     volumes:
