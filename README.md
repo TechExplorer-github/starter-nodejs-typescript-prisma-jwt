@@ -1,5 +1,44 @@
 # nodejs-jwt-cookie
 
+## フォルダ構成
+
+```sh
+.
+├── backend
+│   ├── prisma
+│   │   └── schema.prisma
+│   ├── rest_client
+│   │   ├── login.http
+│   │   ├── logout.http
+│   │   ├── signup.http
+│   │   └── user.http
+│   ├── src
+│   │   ├── controllers
+│   │   │   └── authController.ts
+│   │   ├── middleware
+│   │   │   └── authMiddleware.ts
+│   │   ├── routes
+│   │   │   └── authRoutes.ts
+│   │   ├── utils
+│   │   │   ├── db.ts
+│   │   │   └── generateToken.ts
+│   │   └── index.ts
+│   ├── .env.template
+│   ├── .gitignore
+│   ├── package-lock.json
+│   ├── package.json
+│   └── tsconfig.json
+├── mysql
+│   └── conf.d
+│       └── my.cnf
+├── .env.template
+├── .gitignore
+├── docker-compose.yml
+├── package-lock.json
+├── package.json
+└── README.md
+```
+
 ## 環境構築
 
 1. .env.template をコピーして、適当に書き換える
