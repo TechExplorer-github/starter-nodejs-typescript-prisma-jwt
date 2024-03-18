@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import * as bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import ms from "ms";
 import prisma from "../utils/db";
-import generateToken from "../utils/generateToken";
+import { generateToken, generateRefreshToken } from "../utils/generateToken";
 
 interface AuthRequest extends Request {
   email?: string;
@@ -20,7 +22,25 @@ const signup = async (req: Request, res: Response) => {
   });
 
   const token = generateToken(signupUser.email);
+  const refresh_token = generateRefreshToken(signupUser.email);
+
+  const expiresIn = ms(process.env.REFRESH_TOKEN_EXPIRES_IN as string);
+  const expirationDate = new Date(Date.now() + expiresIn);
+  const tokyoExpirationDate = expirationDate.toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo",
+  });
+  const expirationTime = new Date(tokyoExpirationDate);
+
+  await prisma.token.create({
+    data: {
+      userId: signupUser.id,
+      token: refresh_token,
+      expirationTime: expirationTime,
+    },
+  });
+
   res.cookie("token", token, { httpOnly: true });
+  res.cookie("refresh_token", refresh_token, { httpOnly: true });
 
   return res
     .status(201)
@@ -44,7 +64,25 @@ const login = async (req: Request, res: Response) => {
   }
 
   const token = generateToken(email);
+  const refresh_token = generateRefreshToken(email);
+
+  const expiresIn = ms(process.env.REFRESH_TOKEN_EXPIRES_IN as string);
+  const expirationDate = new Date(Date.now() + expiresIn);
+  const tokyoExpirationDate = expirationDate.toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo",
+  });
+  const expirationTime = new Date(tokyoExpirationDate);
+
+  await prisma.token.create({
+    data: {
+      userId: loginUser.id,
+      token: refresh_token,
+      expirationTime: expirationTime,
+    },
+  });
+
   res.cookie("token", token, { httpOnly: true });
+  res.cookie("refresh_token", refresh_token, { httpOnly: true });
 
   return res
     .status(200)
@@ -67,7 +105,47 @@ const user = async (req: AuthRequest, res: Response) => {
 
 const logout = async (req: Request, res: Response) => {
   res.clearCookie("token");
+  res.clearCookie("refresh_token");
   res.status(200).json({ message: "Cookiesを削除しました。" });
 };
 
-export { signup, login, user, logout };
+const refreshToken = async (req: Request, res: Response) => {
+  const { refresh_token } = req.cookies;
+  const now = new Date(Date.now());
+  const tokyoExpirationDate = now.toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo",
+  });
+  const currentTime = new Date(tokyoExpirationDate);
+
+  const token = await prisma.token.findFirst({
+    where: {
+      token: refresh_token,
+      expirationTime: {
+        gt: currentTime,
+      },
+    },
+  });
+
+  if (!token) {
+    return res.status(401).json({ message: "有効でないトークンです。" });
+  }
+
+  jwt.verify(
+    refresh_token,
+    process.env.REFRESH_TOKEN_SECRET_KEY as string,
+    (err: any, decoded: any) => {
+      if (err) {
+        return res.status(401).json({ message: "有効でないトークンです。" });
+      } else {
+        const email = decoded.email;
+        const token = generateToken(email);
+
+        return res
+          .status(201)
+          .json({ message: "新しいアクセストークンを作成しました。", token });
+      }
+    }
+  );
+};
+
+export { signup, login, user, logout, refreshToken };
