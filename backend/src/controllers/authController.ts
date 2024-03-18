@@ -71,4 +71,9 @@ const user = async (req: AuthRequest, res: Response) => {
   return res.status(200).json({ user });
 };
 
-export { signup, login, user };
+const logout = async (req: Request, res: Response) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "Cookiesを削除しました。" });
+};
+
+export { signup, login, user, logout };
