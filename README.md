@@ -34,8 +34,6 @@
 ├── .env.template
 ├── .gitignore
 ├── docker-compose.yml
-├── package-lock.json
-├── package.json
 └── README.md
 ```
 
