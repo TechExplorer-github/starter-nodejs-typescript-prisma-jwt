@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import prisma from "../libs/db";
+import prisma from "../utils/db";
+import generateToken from "../utils/generateToken";
 
 interface AuthRequest extends Request {
   email?: string;
@@ -20,7 +20,6 @@ const signup = async (req: Request, res: Response) => {
   });
 
   const token = generateToken(signupUser.email);
-
   res.cookie("token", token, { httpOnly: true });
 
   return res
@@ -52,18 +51,13 @@ const login = async (req: Request, res: Response) => {
     .json({ message: "ログインに成功しました。", loginUser });
 };
 
-const generateToken = (email: string) => {
-  return jwt.sign({ email }, process.env.JWT_SECRET_KEY as string, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
 const user = async (req: AuthRequest, res: Response) => {
   const email = req.email;
   const user = await prisma.user.findFirst({
     where: { email: email },
     select: { name: true, email: true },
   });
+
   if (!user) {
     return res.status(404).json({ message: "ユーザは存在しません。" });
   }
