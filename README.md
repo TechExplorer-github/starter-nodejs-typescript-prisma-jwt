@@ -46,7 +46,7 @@
 2. docker を起動
    `docker-compose up -d`
 3. backend コンテナ内に入る
-   `docker-compose exec db /bin/bash`
+   `docker-compose exec backend /bin/bash`
 4. /app に移動
    `cd /app`
 5. .env.template をコピーして、適当に書き換える
@@ -55,8 +55,9 @@
    `npm install`
 7. マイグレーション実行
    `npx prisma migrate dev --name init`
+8. express 起動
+   `npm start`
 
-## Express 動作確認
+## 動作確認
 
-backend のコンテナ内で下記を実行し、ローカルのブラウザから`http://localhost:8000/`にアクセス
-`npx ts-node /app/src/index.ts`
+vscode の拡張機能の「REST Client」をインストールし、backend/rest_client/のファイルを実行する
