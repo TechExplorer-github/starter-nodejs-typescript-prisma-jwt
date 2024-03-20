@@ -3,7 +3,7 @@ version: "3.8"
 services:
   backend:
     container_name: backend
-    image: node
+    image: node:20
     tty: true
     depends_on:
       - db
@@ -16,7 +16,7 @@ services:
 
   db:
     container_name: db
-    image: mysql
+    image: mysql:8
     restart: always
     ports:
       - 3306:3306
