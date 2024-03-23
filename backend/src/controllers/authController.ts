@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import ms from "ms";
 import prisma from "../utils/db";
 import { generateToken, generateRefreshToken } from "../utils/generateToken";
 import { AuthRequest } from "../interfaces/AuthRequest";
+import { getExpirationTime } from "../utils/calcTime";
 
 const signup = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -20,13 +20,7 @@ const signup = async (req: Request, res: Response) => {
 
   const token = generateToken(signupUser.email);
   const refresh_token = generateRefreshToken(signupUser.email);
-
-  const expiresIn = ms(process.env.REFRESH_TOKEN_EXPIRES_IN as string);
-  const expirationDate = new Date(Date.now() + expiresIn);
-  const tokyoExpirationDate = expirationDate.toLocaleString("ja-JP", {
-    timeZone: "Asia/Tokyo",
-  });
-  const expirationTime = new Date(tokyoExpirationDate);
+  const expirationTime = getExpirationTime();
 
   await prisma.token.create({
     data: {
@@ -62,13 +56,7 @@ const login = async (req: Request, res: Response) => {
 
   const token = generateToken(email);
   const refresh_token = generateRefreshToken(email);
-
-  const expiresIn = ms(process.env.REFRESH_TOKEN_EXPIRES_IN as string);
-  const expirationDate = new Date(Date.now() + expiresIn);
-  const tokyoExpirationDate = expirationDate.toLocaleString("ja-JP", {
-    timeZone: "Asia/Tokyo",
-  });
-  const expirationTime = new Date(tokyoExpirationDate);
+  const expirationTime = getExpirationTime();
 
   await prisma.token.create({
     data: {
