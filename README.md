@@ -45,15 +45,13 @@
    `docker-compose up -d`
 3. backend コンテナ内に入る
    `docker-compose exec backend /bin/bash`
-4. /app に移動
-   `cd /app`
-5. .env.template をコピーして、適当に書き換える
+4. .env.template をコピーして、適当に書き換える
    `cp .env.template .env`
-6. ライブラリインストール
+5. ライブラリインストール
    `npm install`
-7. マイグレーション実行
+6. マイグレーション実行
    `npx prisma migrate dev --name init`
-8. express 起動
+7. express 起動
    `npm start`
 
 ## 動作確認

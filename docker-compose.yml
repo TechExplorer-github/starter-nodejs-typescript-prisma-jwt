@@ -5,6 +5,7 @@ services:
     container_name: backend
     image: node:20
     tty: true
+    working_dir: /app
     depends_on:
       - db
     ports:
