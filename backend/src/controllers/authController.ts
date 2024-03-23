@@ -89,6 +89,7 @@ const user = async (req: AuthRequest, res: Response) => {
 };
 
 const logout = async (req: Request, res: Response) => {
+  // TODO: DBのリフレッシュトークンを削除
   res.clearCookie("token");
   res.clearCookie("refresh_token");
   res.status(200).json({ message: "Cookiesを削除しました。" });
