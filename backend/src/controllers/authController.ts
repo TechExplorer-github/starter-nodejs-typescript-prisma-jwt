@@ -4,10 +4,7 @@ import jwt from "jsonwebtoken";
 import ms from "ms";
 import prisma from "../utils/db";
 import { generateToken, generateRefreshToken } from "../utils/generateToken";
-
-interface AuthRequest extends Request {
-  email?: string;
-}
+import { AuthRequest } from "../interfaces/AuthRequest";
 
 const signup = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;

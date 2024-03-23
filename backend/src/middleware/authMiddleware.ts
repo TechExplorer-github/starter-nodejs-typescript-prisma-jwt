@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-
-interface AuthRequest extends Request {
-  email?: string;
-}
+import { AuthRequest } from "../interfaces/AuthRequest";
 
 const verifyToken = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
